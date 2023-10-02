@@ -1,0 +1,15 @@
+[Unit]
+Description=Paste
+StartLimitIntervalSec=30
+StartLimitBurst=2
+
+[Service]
+WorkingDirectory=/root/paste/
+ExecStart=/root/paste/paste
+StandardOutput=append:/var/log/paste.log
+StandardError=append:/var/log/paste.log
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

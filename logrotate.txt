@@ -1,0 +1,5 @@
+/var/log/paste.log {
+    daily
+    rotate 1
+    copytruncate
+}

@@ -1,0 +1,118 @@
+*,
+:before,
+:after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: #000;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  tab-size: 4;
+}
+
+#nav {
+  display: flex;
+  padding: 0 1rem;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #dfdfdf;
+}
+
+#title {
+  margin: 1rem 0;
+  font-size: 1.5rem;
+  font-weight: normal;
+}
+
+#title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+#save {
+  padding: 0.5rem 1rem;
+  background-color: #005fb8;
+  color: #fff;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: inherit;
+  cursor: pointer;
+  transition-duration: 200ms;
+}
+
+#save:hover {
+  background-color: #186ebe;
+}
+
+#new,
+#raw {
+  display: inline-block;
+  margin-right: 1rem;
+  color: #1d4ed8;
+}
+
+#metadata {
+  font-size: 0.875rem;
+  color: #3b3b3b;
+}
+
+#content {
+  flex: 1;
+  margin: 0;
+  padding: 1rem;
+  background-color: #ffffff;
+  color: #3b3b3b;
+  font-size: 1rem;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: monospace; /* textarea does not use a monospaced font in WebKit */
+  border-radius: 0; /* textarea has a rounded border in WebKit */
+}
+
+pre#content {
+  overflow-x: scroll;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+
+  body {
+    color: #fff;
+  }
+
+  #nav {
+    background-color: #181818;
+    border-bottom: 1px solid #2a2a2a;
+  }
+
+  #save {
+    background-color: #0078d4;
+    color: #fff;
+  }
+
+  #save:hover {
+    background-color: #026ec1;
+  }
+
+  #new,
+  #raw {
+    color: #60a5fa;
+  }
+
+  #metadata {
+    color: #cccccc;
+  }
+
+  #content {
+    background-color: #1f1f1f;
+    color: #cccccc;
+  }
+}
