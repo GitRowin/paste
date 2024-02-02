@@ -76,7 +76,7 @@ body {
 }
 
 pre#content {
-  overflow-x: scroll;
+  overflow-x: auto;
 }
 
 @media (prefers-color-scheme: dark) {
