@@ -69,8 +69,6 @@ func (app *App) PostSave(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data = bytes.TrimSpace(data)
-
 	if len(data) == 0 {
 		app.SendApiError(w, r, http.StatusBadRequest, "Please enter something to save.")
 		return
