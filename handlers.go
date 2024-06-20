@@ -55,54 +55,58 @@ func (app *App) GetIndex(w http.ResponseWriter, _ *http.Request) {
 	app.SendHtml(w, document)
 }
 
-func (app *App) PostSave(w http.ResponseWriter, r *http.Request) {
-	r.Body = http.MaxBytesReader(w, r.Body, 128*1024)
+func (app *App) PostSave() http.HandlerFunc {
+	limiter := NewAddrRateLimiter(rate.Every(5*time.Second), 10)
 
-	data, err := io.ReadAll(r.Body)
+	return func(w http.ResponseWriter, r *http.Request) {
+		r.Body = http.MaxBytesReader(w, r.Body, 128*1024)
 
-	if err != nil {
-		if errors.As(err, new(*http.MaxBytesError)) {
-			app.SendApiError(w, r, http.StatusRequestEntityTooLarge, "Your paste is too large.")
-		} else {
-			app.SendApiError(w, r, http.StatusBadRequest, "Something went wrong. Please try again.")
+		data, err := io.ReadAll(r.Body)
+
+		if err != nil {
+			if errors.As(err, new(*http.MaxBytesError)) {
+				app.SendApiError(w, r, http.StatusRequestEntityTooLarge, "Your paste is too large.")
+			} else {
+				app.SendApiError(w, r, http.StatusBadRequest, "Something went wrong. Please try again.")
+			}
+			return
 		}
-		return
+
+		if len(data) == 0 {
+			app.SendApiError(w, r, http.StatusBadRequest, "Please enter something to save.")
+			return
+		}
+
+		addr := netip.MustParseAddr(r.RemoteAddr)
+
+		if !limiter.Allow(addr) {
+			app.SendApiError(w, r, http.StatusTooManyRequests, "You have been rate limited.")
+			return
+		}
+
+		id, err := GenerateId()
+
+		if err != nil {
+			app.HandleApiError(w, r, err)
+			return
+		}
+
+		milli := time.Now().UTC().UnixMilli()
+		countryCode := r.Header.Get("CF-IPCountry")
+
+		_, err = app.db.Exec("INSERT INTO pastes (id, created_at, country_code, content) VALUES ($1, $2, $3, $4)", id, milli, countryCode, data)
+
+		if err != nil {
+			app.HandleApiError(w, r, err)
+			return
+		}
+
+		type Response struct {
+			Id string `json:"id"`
+		}
+
+		app.SendJson(w, r, http.StatusOK, Response{Id: id})
 	}
-
-	if len(data) == 0 {
-		app.SendApiError(w, r, http.StatusBadRequest, "Please enter something to save.")
-		return
-	}
-
-	addr := netip.MustParseAddr(r.RemoteAddr)
-
-	if !app.saveRateLimiter.Allow(addr) {
-		app.SendApiError(w, r, http.StatusTooManyRequests, "You have been rate limited.")
-		return
-	}
-
-	id, err := GenerateId()
-
-	if err != nil {
-		app.HandleApiError(w, r, err)
-		return
-	}
-
-	milli := time.Now().UTC().UnixMilli()
-	countryCode := r.Header.Get("CF-IPCountry")
-
-	_, err = app.db.Exec("INSERT INTO pastes (id, created_at, country_code, content) VALUES ($1, $2, $3, $4)", id, milli, countryCode, data)
-
-	if err != nil {
-		app.HandleApiError(w, r, err)
-		return
-	}
-
-	type Response struct {
-		Id string `json:"id"`
-	}
-
-	app.SendJson(w, r, http.StatusOK, Response{Id: id})
 }
 
 func (app *App) GetPaste(w http.ResponseWriter, r *http.Request) {
@@ -254,18 +258,13 @@ func (app *App) RealIP(next http.Handler) http.Handler {
 }
 
 func (app *App) LogRequest(next http.Handler) http.Handler {
-	// Log max 20 requests per second
-	limiter := rate.NewLimiter(rate.Limit(20), 20)
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		now := time.Now()
 		ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 
 		defer func() {
-			if limiter.Allow() {
-				log.Printf("%s %d %dB %s %s %s %s %s\n",
-					time.Since(now), ww.Status(), ww.BytesWritten(), r.Header.Get("CF-IPCountry"), r.RemoteAddr, r.Method, r.RequestURI, r.UserAgent())
-			}
+			log.Printf("%s %d %dB %s %s %s %s %s\n",
+				time.Since(now), ww.Status(), ww.BytesWritten(), r.Header.Get("CF-IPCountry"), r.RemoteAddr, r.Method, r.RequestURI, r.UserAgent())
 		}()
 
 		next.ServeHTTP(ww, r)

@@ -7,7 +7,6 @@ import (
 	"errors"
 	"github.com/go-chi/chi/v5"
 	_ "github.com/mattn/go-sqlite3"
-	"golang.org/x/time/rate"
 	"log"
 	"net/http"
 	"os"
@@ -19,8 +18,7 @@ import (
 var assets embed.FS
 
 type App struct {
-	db              *sql.DB
-	saveRateLimiter *AddrRateLimiter
+	db *sql.DB
 }
 
 func main() {
@@ -52,8 +50,7 @@ func main() {
 	}
 
 	app := &App{
-		db:              db,
-		saveRateLimiter: NewAddrRateLimiter(rate.Every(5*time.Second), 10),
+		db: db,
 	}
 
 	router := chi.NewRouter()
@@ -63,7 +60,7 @@ func main() {
 	router.Use(app.LogRequest)
 
 	router.Get("/", app.GetIndex)
-	router.Post("/save", app.PostSave)
+	router.Post("/save", app.PostSave())
 	router.Get("/{id:[A-Za-z0-9]{8}}", app.GetPaste)
 	router.Get("/raw/{id:[A-Za-z0-9]{8}}", app.GetRawPaste)
 
