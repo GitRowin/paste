@@ -4,8 +4,8 @@ A lightweight service to anonymously share code snippets. Written in Go.
 
 A public instance is available at https://paste.rowin.dev/.
 
-This project is meant to be used with Cloudflare as it relies on `CF-Connecting-IP`, `CF-IPCountry`,
-and `Cloudflare-CDN-Cache-Control`.
+This project is meant to be run behind Cloudflare as it relies on the `CF-Connecting-IP`, `CF-IPCountry`,
+and `Cloudflare-CDN-Cache-Control` headers.
 
 ## Features
 
