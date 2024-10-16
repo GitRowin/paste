@@ -23,7 +23,7 @@ func (app *App) GetIndex(w http.ResponseWriter, _ *http.Request) {
 			El("head",
 				Sela("meta", []Attr{{"charset", "utf-8"}}),
 				Sela("meta", []Attr{{"name", "viewport"}, {"content", "width=device-width, initial-scale=1"}}),
-				Sela("meta", []Attr{{"name", "description"}, {"content", "Anonymously share code snippets with our simple paste-sharing service."}}),
+				Sela("meta", []Attr{{"name", "description"}, {"content", "Anonymously share code snippets."}}),
 				El("title", "Paste"),
 				Sela("link", []Attr{{"rel", "stylesheet"}, {"href", "/css/toastify.min.css"}}),
 				Sela("link", []Attr{{"rel", "stylesheet"}, {"href", "/css/style.css"}}),
