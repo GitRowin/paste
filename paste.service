@@ -4,7 +4,7 @@ StartLimitIntervalSec=30
 StartLimitBurst=2
 
 [Service]
-# useradd --system --create-home --shell /usr/sbin/nologin paste
+# useradd --system --shell /usr/sbin/nologin paste
 User=paste
 Group=paste
 AmbientCapabilities=CAP_NET_BIND_SERVICE
@@ -12,8 +12,9 @@ CapabilityBoundingSet=CAP_NET_BIND_SERVICE
 NoNewPrivileges=true
 SystemCallFilter=@system-service
 ProtectSystem=strict
-WorkingDirectory=/home/paste
-ExecStart=/home/paste/paste
+ProtectHome=true
+WorkingDirectory=/opt/paste
+ExecStart=/opt/paste/paste
 StandardOutput=append:/var/log/paste.log
 StandardError=append:/var/log/paste.log
 Restart=on-failure
