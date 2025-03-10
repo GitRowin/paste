@@ -59,7 +59,7 @@ func (app *App) PostSave() http.HandlerFunc {
 	limiter := NewAddrRateLimiter(rate.Every(5*time.Second), 10)
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		r.Body = http.MaxBytesReader(w, r.Body, 128*1024)
+		r.Body = http.MaxBytesReader(w, r.Body, 512*1024)
 
 		data, err := io.ReadAll(r.Body)
 
