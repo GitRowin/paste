@@ -4,8 +4,6 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
-	"github.com/jellydator/ttlcache/v3"
-	"golang.org/x/time/rate"
 	"io"
 	"log"
 	"math/big"
@@ -14,6 +12,9 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/jellydator/ttlcache/v3"
+	"golang.org/x/time/rate"
 )
 
 func (app *App) LogError(r *http.Request, err error) {

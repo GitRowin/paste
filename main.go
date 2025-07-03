@@ -5,13 +5,14 @@ import (
 	"database/sql"
 	"embed"
 	"errors"
-	"github.com/go-chi/chi/v5"
-	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/go-chi/chi/v5"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 //go:embed assets/*
