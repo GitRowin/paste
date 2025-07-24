@@ -4,7 +4,7 @@ const contentEl = document.getElementById("content");
 saveEl.addEventListener("click", submit);
 
 document.addEventListener("keydown", (event) => {
-  if (event.ctrlKey && event.key === "s") {
+  if ((event.ctrlKey || event.metaKey) && event.key === "s") {
     event.preventDefault();
     void submit();
   }
