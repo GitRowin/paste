@@ -13,4 +13,4 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-hljs.highlightElement(document.getElementById("content"));
+hljs.highlightElement(contentEl);
